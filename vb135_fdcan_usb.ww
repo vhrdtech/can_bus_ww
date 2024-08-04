@@ -1,0 +1,4 @@
+trait ApiRoot {
+    fn termination(enabled: bool);
+    fn test(x: u8);
+}
