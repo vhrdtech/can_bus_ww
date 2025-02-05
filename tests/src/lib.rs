@@ -5,7 +5,7 @@ use wire_weaver::wire_weaver_api;
     api_model = "client_server_v0_1",
     skip_api_model_codegen = true,
     no_alloc = false,
-    // derive = "Debug, PartialEq, Eq"
+    derive = "Debug, PartialEq, Eq"
 )]
 mod api {}
 
