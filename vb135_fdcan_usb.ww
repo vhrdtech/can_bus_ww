@@ -1,4 +1,31 @@
+struct CanFrame {
+    timestamp_us: u32,
+    id: CanId,
+    kind: CanFrameKind,
+    data: Vec<u8>,
+}
+
+#[repr(u4)]
+#[final_evolution]
+enum CanId {
+    Standard(u16),
+    Extended(u32),
+}
+
+#[repr(u4)]
+#[final_evolution]
+enum CanFrameKind {
+    Classic { rtr: bool },
+    Fd { brs: bool, esi: bool },
+}
+
 trait ApiRoot {
+    // impl_!(FirmwareUpdate);
+    // impl_!(FirmwareInfo);
+    // impl_!(BoardInfo);
+    // impl_!(IndicationControl);
+    // impl_!(Counters);
+    // impl_!(LogDefmt);
+
     fn termination(enabled: bool);
-    fn test(x: u8);
 }
