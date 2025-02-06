@@ -3,11 +3,20 @@ use wire_weaver::wire_weaver_api;
 #[wire_weaver_api(
     ww = "../vb135_fdcan_usb.ww",
     api_model = "client_server_v0_1",
-    skip_api_model_codegen = true,
+    server = true,
     no_alloc = false,
-    derive = "Debug, PartialEq, Eq"
+    derive = "Debug, PartialEq, Eq",
+    debug_to_file = "./target/ww.rs"
 )]
-mod api {}
+mod api {
+    #[allow(dead_code)]
+    struct Context {}
+
+    impl Context {
+        #[allow(dead_code)]
+        async fn termination(&mut self, _enabled: bool) {}
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -94,5 +103,24 @@ mod tests {
 
         frame.timestamp_us = None;
         check_frame(&frame, &hex!("1 0 ddccbb00 1 0 ccddeeff 04")[..]);
+    }
+
+    #[test]
+    fn can_frame_in_stream_update_event() {
+        let frame = CanFrame {
+            id: CanId::Extended(0xbbccdd),
+            kind: CanFrameKind::Fd {
+                brs: false,
+                esi: false,
+            },
+            data: vec![0xcc, 0xdd, 0xee, 0xff],
+            timestamp_us: Some(0xaa),
+        };
+        let mut frame_scratch = [0u8; 128];
+        let mut event_scratch = [0u8; 128];
+        let bytes = canbus_stream_ser(&frame, &mut frame_scratch, &mut event_scratch).unwrap();
+        // println!("{bytes:02x?}");
+        // event.seq is_ok=1 repr(EventKind)=5=StreamUpdate path=[1] free(0) frame=15B free(0) Nib16Rev=15(payload len) Nib16Rev=1(path len)
+        assert_eq!(bytes, hex!("0000 8 5 1 0 10ddccbb0012ccddeeffaa00000004 0 79 1"))
     }
 }
