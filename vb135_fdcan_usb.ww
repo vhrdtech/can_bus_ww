@@ -1,8 +1,10 @@
 struct CanFrame {
-    timestamp_us: u32,
     id: CanId,
     kind: CanFrameKind,
+    #[flag]
+    timestamp_us: bool,
     data: Vec<u8>,
+    timestamp_us: Option<u32>,
 }
 
 #[repr(u4)]
@@ -28,4 +30,6 @@ trait ApiRoot {
     // impl_!(LogDefmt);
 
     fn termination(enabled: bool);
+    stream_up!(canbus, CanFrame);
+    // stream_up!(sd, CanFrame);
 }

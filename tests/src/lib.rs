@@ -33,51 +33,66 @@ mod tests {
 
     #[test]
     fn can_frame_classic_standard_format_sanity() {
-        let frame = CanFrame {
-            timestamp_us: 0xaa000011,
+        let mut frame = CanFrame {
             id: CanId::Standard(0xbb),
             kind: CanFrameKind::Classic { rtr: false },
             data: vec![0xcc, 0xdd, 0xee, 0xff],
+            timestamp_us: Some(0xaa000011),
         };
-        check_frame(&frame, &hex!("110000aa 0 0 bb00 0 0 ccddeeff 04")[..]);
+        check_frame(&frame, &hex!("0 0 bb00 0 4 ccddeeff 110000aa 04")[..]);
+
+        frame.kind = CanFrameKind::Classic { rtr: true };
+        check_frame(&frame, &hex!("0 0 bb00 0 c ccddeeff 110000aa 04")[..]);
+
+        frame.timestamp_us = None;
+        check_frame(&frame, &hex!("0 0 bb00 0 8 ccddeeff 04")[..]);
     }
 
     #[test]
     fn can_frame_classic_extended_format_sanity() {
-        let frame = CanFrame {
-            timestamp_us: 0xaa,
+        let mut frame = CanFrame {
             id: CanId::Extended(0xbbccdd),
             kind: CanFrameKind::Classic { rtr: false },
             data: vec![0xcc, 0xdd, 0xee, 0xff],
+            timestamp_us: Some(0xaa),
         };
-        check_frame(&frame, &hex!("aa000000 1 0 ddccbb00 0 0 ccddeeff 04")[..]);
+        check_frame(&frame, &hex!("1 0 ddccbb00 0 4 ccddeeff aa000000 04")[..]);
+
+        frame.timestamp_us = None;
+        check_frame(&frame, &hex!("1 0 ddccbb00 0 0 ccddeeff 04")[..]);
     }
 
     #[test]
     fn can_frame_fd_standard_format_sanity() {
-        let frame = CanFrame {
-            timestamp_us: 0xaa,
+        let mut frame = CanFrame {
             id: CanId::Standard(0xbb),
             kind: CanFrameKind::Fd {
                 brs: true,
                 esi: true,
             },
             data: vec![0xcc, 0xdd, 0xee, 0xff],
+            timestamp_us: Some(0xaa),
         };
-        check_frame(&frame, &hex!("aa000000 0 0 bb00 1 c ccddeeff 04")[..]);
+        check_frame(&frame, &hex!("0 0 bb00 1 e ccddeeff aa000000 04")[..]);
+
+        frame.timestamp_us = None;
+        check_frame(&frame, &hex!("0 0 bb00 1 c ccddeeff 04")[..]);
     }
 
     #[test]
     fn can_frame_fd_extended_format_sanity() {
-        let frame = CanFrame {
-            timestamp_us: 0xaa,
+        let mut frame = CanFrame {
             id: CanId::Extended(0xbbccdd),
             kind: CanFrameKind::Fd {
                 brs: false,
                 esi: false,
             },
             data: vec![0xcc, 0xdd, 0xee, 0xff],
+            timestamp_us: Some(0xaa),
         };
-        check_frame(&frame, &hex!("aa000000 1 0 ddccbb00 1 0 ccddeeff 04")[..]);
+        check_frame(&frame, &hex!("1 0 ddccbb00 1 2 ccddeeff aa000000 04")[..]);
+
+        frame.timestamp_us = None;
+        check_frame(&frame, &hex!("1 0 ddccbb00 1 0 ccddeeff 04")[..]);
     }
 }
