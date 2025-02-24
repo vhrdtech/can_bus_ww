@@ -30,6 +30,7 @@ trait ApiRoot {
     // impl_!(LogDefmt);
 
     fn termination(enabled: bool);
+    fn termination_status() -> bool;
     stream_up!(canbus, CanFrame);
     // stream_up!(sd, CanFrame);
 }
