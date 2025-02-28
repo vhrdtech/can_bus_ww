@@ -1,3 +1,7 @@
+const PROTOCOL_GID: u32 = 7;
+const VERSION_MAJOR: u8 = 0;
+const VERSION_MINOR: u8 = 1;
+
 struct CanFrame {
     id: CanId,
     kind: CanFrameKind,
@@ -33,4 +37,5 @@ trait ApiRoot {
     fn termination_status() -> bool;
     stream_up!(canbus, CanFrame);
     // stream_up!(sd, CanFrame);
+    // stream_up! tx queue watermark, sys time, CAN status changes, etc?
 }
